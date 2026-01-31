@@ -215,6 +215,16 @@ $html = @"
             color: #fff;
         }
 
+        .nested-folder-header,
+        .game-header {
+            cursor: pointer;
+            user-select: none;
+        }
+        .nested-folder-header * {
+            cursor: pointer !important;
+            user-select: none !important;
+        }
+
         /* When not expanded, shrink card to just header (no big gray box) */
         .game-card:not(.expanded) {
             height: 72px;
