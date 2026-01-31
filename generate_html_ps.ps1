@@ -125,10 +125,11 @@ $html = @"
         
         .games-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
             margin-bottom: 40px;
             align-items: start;
+            justify-items: center;
         }
         
         .game-card {
@@ -139,8 +140,9 @@ $html = @"
             animation: slideUp 0.5s ease-out;
             display: flex;
             flex-direction: column;
-            min-width: 280px;
-            max-width: 100%;
+            width: 320px;
+            min-width: 320px;
+            max-width: 320px;
         }
         
         .game-card:hover {
@@ -161,7 +163,6 @@ $html = @"
             flex-shrink: 0;
             gap: 10px;
             min-height: 60px;
-            min-width: 240px;
             width: 100%;
             box-sizing: border-box;
             font-weight: 600;
@@ -170,6 +171,8 @@ $html = @"
             border: 1.5px solid #5a5a8a;
             box-shadow: 0 2px 10px rgba(102,126,234,0.08);
             border-radius: 12px 12px 0 0;
+            height: 72px;
+            overflow: hidden;
         }
         
         .game-header h2 {
