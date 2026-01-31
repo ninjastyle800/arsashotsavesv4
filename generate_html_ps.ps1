@@ -23,9 +23,8 @@ function Build-FolderTree {
     }
     
     $items = Get-ChildItem -Path $folderPath -Force -ErrorAction SilentlyContinue
-    # Sort directories and files alphabetically by name
-    $dirs = $items | Where-Object { $_.PSIsContainer } | Sort-Object Name
-    $files = $items | Where-Object { -not $_.PSIsContainer } | Sort-Object Name
+    $dirs = $items | Where-Object { $_.PSIsContainer }
+    $files = $items | Where-Object { -not $_.PSIsContainer }
     
     foreach ($file in $files) {
         $relPath = (Resolve-Path -Path $file.FullName -Relative -RelativeBasePath $savesDir).Replace('.\', '').Replace('\', '/')
@@ -53,7 +52,9 @@ $games = @{}
 
 $gameFolders = Get-ChildItem -Path $savesDir -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -notmatch '^docs$|node_modules|\.git|^generate' }
 
-foreach ($gameFolder in $gameFolders) {
+# Sort the top-level game folders alphabetically by name for the drop boxes
+$sortedGameFolders = $gameFolders | Sort-Object Name
+foreach ($gameFolder in $sortedGameFolders) {
     Write-Host "Processing: $($gameFolder.Name)"
     $games[$gameFolder.Name] = Build-FolderTree -folderPath $gameFolder.FullName
 }
