@@ -200,6 +200,9 @@ $html = @"
         
         .nested-folder {
             margin-bottom: 8px;
+            min-width: 220px;
+            width: 100%;
+            box-sizing: border-box;
         }
         
         .nested-folder-header {
@@ -226,8 +229,11 @@ $html = @"
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 0;
+            padding: 8px 12px;
             border-bottom: 1px solid #eee;
+            min-width: 220px;
+            width: 100%;
+            box-sizing: border-box;
         }
         
         .file-item:last-child {
