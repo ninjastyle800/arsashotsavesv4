@@ -23,9 +23,9 @@ function Build-FolderTree {
     }
     
     $items = Get-ChildItem -Path $folderPath -Force -ErrorAction SilentlyContinue
-    
-    $dirs = $items | Where-Object { $_.PSIsContainer }
-    $files = $items | Where-Object { -not $_.PSIsContainer }
+    # Sort directories and files alphabetically by name
+    $dirs = $items | Where-Object { $_.PSIsContainer } | Sort-Object Name
+    $files = $items | Where-Object { -not $_.PSIsContainer } | Sort-Object Name
     
     foreach ($file in $files) {
         $relPath = (Resolve-Path -Path $file.FullName -Relative -RelativeBasePath $savesDir).Replace('.\', '').Replace('\', '/')
