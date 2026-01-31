@@ -214,6 +214,16 @@ $html = @"
             background: #111;
             color: #fff;
         }
+
+        /* When not expanded, shrink card to just header (no big gray box) */
+        .game-card:not(.expanded) {
+            height: 72px;
+            min-height: 0;
+        }
+        .game-card:not(.expanded) .game-content {
+            display: none !important;
+            padding: 0 !important;
+        }
         
         .game-files {
             padding: 0;
