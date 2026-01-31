@@ -3229,12 +3229,14 @@
             const lowerSearch = searchTerm.toLowerCase();
             let count = 0;
             
-            Object.entries(gamesData).forEach(([gameName, gameData]) => {
-                if (gameName.toLowerCase().includes(lowerSearch)) {
+            // Sort game names alphabetically before rendering
+            Object.entries(gamesData)
+                .filter(([gameName, _]) => gameName.toLowerCase().includes(lowerSearch))
+                .sort((a, b) => a[0].toLowerCase().localeCompare(b[0].toLowerCase()))
+                .forEach(([gameName, gameData]) => {
                     grid.appendChild(createGameCard(gameName, gameData));
                     count++;
-                }
-            });
+                });
             
             noResults.classList.toggle('hidden', count > 0);
         }
