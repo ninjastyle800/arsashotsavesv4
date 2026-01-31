@@ -146,7 +146,7 @@ $html = @"
         
         .game-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #bbb;
+            color: #fff;
             padding: 20px;
             cursor: pointer;
             display: flex;
@@ -246,7 +246,7 @@ $html = @"
         }
         
         .file-size {
-            color: #999;
+            color: #fff;
             font-size: 0.8em;
             min-width: 50px;
             text-align: right;
@@ -254,7 +254,7 @@ $html = @"
         
         .download-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #bbb;
+            color: #fff;
             border: none;
             padding: 6px 14px;
             border-radius: 6px;
