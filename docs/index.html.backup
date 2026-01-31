@@ -1,0 +1,2059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Saves Download Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            animation: slideDown 0.5s ease-out;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        
+        .search-box {
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .search-box input {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .game-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+        }
+        
+        .game-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            position: relative;
+        }
+        
+        .game-header h2 {
+            font-size: 1.3em;
+            flex: 1;
+        }
+        
+        .toggle-icon {
+            font-size: 1.5em;
+            transition: transform 0.3s ease;
+        }
+        
+        .game-card.expanded .toggle-icon {
+            transform: rotate(180deg);
+        }
+        
+        .game-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .game-card.expanded .game-content {
+            max-height: 2000px;
+            overflow-y: auto;
+        }
+        
+        .game-files {
+            padding: 20px;
+        }
+        
+        .subcategory {
+            margin-bottom: 20px;
+        }
+        
+        .subcategory:empty {
+            display: none;
+        }
+        
+        .subcategory-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            padding: 4px 0;
+        }
+        
+        .category-level-1 {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 0.95em;
+            padding: 8px 0 4px 0;
+            margin-top: 8px;
+        }
+        
+        .category-level-2 {
+            font-weight: 600;
+            color: #764ba2;
+            font-size: 0.88em;
+            padding: 6px 0 2px 15px;
+            margin-top: 4px;
+        }
+        
+        .category-level-3 {
+            font-weight: 500;
+            color: #888;
+            font-size: 0.85em;
+            padding: 4px 0 2px 30px;
+        }
+        
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .file-item:last-child {
+            border-bottom: none;
+        }
+        
+        .file-name {
+            flex: 1;
+            color: #333;
+            font-size: 0.9em;
+            word-break: break-all;
+        }
+        
+        .file-info {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-left: 12px;
+        }
+        
+        .file-size {
+            color: #999;
+            font-size: 0.85em;
+            min-width: 60px;
+            text-align: right;
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: opacity 0.2s;
+        }
+        
+        .download-btn:hover {
+            opacity: 0.85;
+        }
+        
+        .nested-section {
+            margin-left: 10px;
+            padding-left: 10px;
+            border-left: 2px solid #ddd;
+            margin-bottom: 10px;
+        }
+        
+        .nested-title {
+            font-size: 0.85em;
+            color: #555;
+            padding: 4px 0;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .nested-title:hover {
+            color: #667eea;
+        }
+        
+        .nested-toggle {
+            display: inline-block;
+            width: 12px;
+            transition: transform 0.2s;
+        }
+        
+        .nested-toggle.expanded {
+            transform: rotate(90deg);
+        }
+        
+        .nested-content {
+            display: none;
+            margin-top: 8px;
+        }
+        
+        .nested-content.expanded {
+            display: block;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 1.2em;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 Game Saves Download Center</h1>
+            <p>Browse and download your favorite game save files</p>
+        </header>
+        
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search games..." />
+        </div>
+        
+        <div class="games-grid" id="gamesGrid">
+            <!-- Games will be inserted here -->
+        </div>
+        
+        <div class="no-results hidden" id="noResults">
+            No games found matching your search.
+        </div>
+        
+        <footer>
+            <p>✨ Created with ❤️ for game saves | Powered by GitHub Pages</p>
+        </footer>
+    </div>
+    
+    <script>
+        const gamesData = {
+  "Tales of Arise": {
+    "files": [],
+    "subcategories": {
+      "PS4 (US)": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Tales of Arise/modded starter save/PS4 (US)/Tales of Arise Modded Starter Save PS4 US.zip",
+          "name": "Tales of Arise Modded Starter Save PS4 US.zip",
+          "size": "3.6 MB"
+        }
+      ]
+    }
+  },
+  "Tiny Tina's Wonderlands": {
+    "files": [
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Tiny Tina's Wonderlands/Tiny Tina's Wonderlands Modded Starter Saves PC.zip",
+        "name": "Tiny Tina's Wonderlands Modded Starter Saves PC.zip",
+        "size": "1.1 MB"
+      },
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Tiny Tina's Wonderlands/Tiny Tina's Wonderlands Modded Starter Saves PS4 US.zip",
+        "name": "Tiny Tina's Wonderlands Modded Starter Saves PS4 US.zip",
+        "size": "10.0 MB"
+      }
+    ],
+    "subcategories": {}
+  },
+  "The Surge 1": {
+    "files": [
+      {
+        "path": "arsashots-saves-main/arsashot-saves/The Surge 1/The Surge 1 Modded Starter Save PS4 EU.zip",
+        "name": "The Surge 1 Modded Starter Save PS4 EU.zip",
+        "size": "2.9 MB"
+      },
+      {
+        "path": "arsashots-saves-main/arsashot-saves/The Surge 1/The Surge 1 Modded Starter Save PS4 US.zip",
+        "name": "The Surge 1 Modded Starter Save PS4 US.zip",
+        "size": "2.9 MB"
+      }
+    ],
+    "subcategories": {}
+  },
+  "Days Gone": {
+    "files": [],
+    "subcategories": {
+      "PS4 (US)": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Days Gone/Modded Starter Saves/PS4 (US)/CUSA08966.zip",
+          "name": "CUSA08966.zip",
+          "size": "1.5 MB"
+        }
+      ]
+    }
+  },
+  "Sword Art Online Hollow Realization": {
+    "files": [
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Sword Art Online Hollow Realization/Sword Art Online Hollow Realization Modded Starter Save PC.zip",
+        "name": "Sword Art Online Hollow Realization Modded Starter Save PC.zip",
+        "size": "22.0 KB"
+      },
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Sword Art Online Hollow Realization/Sword Art Online Hollow Realization Modded Starter Save PS4.zip",
+        "name": "Sword Art Online Hollow Realization Modded Starter Save PS4.zip",
+        "size": "2.5 MB"
+      }
+    ],
+    "subcategories": {}
+  },
+  "Far Cry 4": {
+    "files": [
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Far Cry 4/Far Cry 4 Modded Starter Save PC.zip",
+        "name": "Far Cry 4 Modded Starter Save PC.zip",
+        "size": "25.1 KB"
+      },
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Far Cry 4/Far Cry 4 Modded Starter Save PS4 EU.zip",
+        "name": "Far Cry 4 Modded Starter Save PS4 EU.zip",
+        "size": "9.9 MB"
+      },
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Far Cry 4/Far Cry 4 Modded Starter Save PS4 US.zip",
+        "name": "Far Cry 4 Modded Starter Save PS4 US.zip",
+        "size": "1.5 MB"
+      }
+    ],
+    "subcategories": {}
+  },
+  "borderlands 2": {
+    "files": [],
+    "subcategories": {
+      "Xbox 360": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/All Customization Saves/Xbox 360/Saves",
+          "name": "Saves",
+          "size": "1 B"
+        }
+      ],
+      "Gunzerker": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/All Customization Saves/PC/Heads & Skins Dropper/Gunzerker/SaveCS04.sav",
+          "name": "SaveCS04.sav",
+          "size": "136.1 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/All Customization Saves/PS4 (US)/Heads & Skins Dropper/Gunzerker/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "8.9 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/All Customization Saves/Xbox 360/Heads & Skins Dropper/Gunzerker/SaveCS04.sav",
+          "name": "SaveCS04.sav",
+          "size": "136.1 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Hybrid Weapons Saves/pc save/Gunzerker/SaveHYB3.sav",
+          "name": "SaveHYB3.sav",
+          "size": "137.8 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Hybrid Weapons Saves/PS4 (US)/Gunzerker/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "11.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Hybrid Weapons Saves/xbox 360 save/Gunzerker/SaveHYB3.sav",
+          "name": "SaveHYB3.sav",
+          "size": "156.2 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Instant Level Saves/pc save/Gunzerker/SaveXP04.sav",
+          "name": "SaveXP04.sav",
+          "size": "218.0 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Instant Level Saves/PS4 (US)/Gunzerker/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "9.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Instant Level Saves/xbox 360 save/Gunzerker/SaveXP04.sav",
+          "name": "SaveXP04.sav",
+          "size": "218.0 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/op 10 booster/pc save/Gunzerker/SaveOP04.sav",
+          "name": "SaveOP04.sav",
+          "size": "218.0 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/op 10 booster/PS4 (US)/Gunzerker/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "9.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/op 10 booster/xbox 360 save/Gunzerker/SaveOP04.sav",
+          "name": "SaveOP04.sav",
+          "size": "218.0 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Starter Saves/PC/Gunzerker/Save0004.sav",
+          "name": "Save0004.sav",
+          "size": "13.1 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Starter Saves/PS4 (US)/Gunzerker/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "1.3 MB"
+        }
+      ],
+      "PC": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/All Customization Saves/PC/Saves",
+          "name": "Saves",
+          "size": "1 B"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Profile Saves/PC/profile.bin",
+          "name": "profile.bin",
+          "size": "615 B"
+        }
+      ],
+      "Commando": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/All Customization Saves/PC/Heads & Skins Dropper/Commando/SaveCS01.sav",
+          "name": "SaveCS01.sav",
+          "size": "136.0 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/All Customization Saves/PS4 (US)/Heads & Skins Dropper/Commando/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "8.9 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/All Customization Saves/Xbox 360/Heads & Skins Dropper/Commando/SaveCS01.sav",
+          "name": "SaveCS01.sav",
+          "size": "136.0 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Hybrid Weapons Saves/pc save/Commando/SaveHYB2.sav",
+          "name": "SaveHYB2.sav",
+          "size": "138.2 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Hybrid Weapons Saves/PS4 (US)/Commando/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "11.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Hybrid Weapons Saves/xbox 360 save/Commando/SaveHYB2.sav",
+          "name": "SaveHYB2.sav",
+          "size": "138.0 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Instant Level Saves/pc save/Commando/SaveXP01.sav",
+          "name": "SaveXP01.sav",
+          "size": "217.9 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Instant Level Saves/PS4 (US)/Commando/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "9.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Instant Level Saves/xbox 360 save/Commando/SaveXP01.sav",
+          "name": "SaveXP01.sav",
+          "size": "217.9 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/op 10 booster/pc save/Commando/SaveOP01.sav",
+          "name": "SaveOP01.sav",
+          "size": "217.9 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/op 10 booster/PS4 (US)/Commando/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "9.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/op 10 booster/xbox 360 save/Commando/SaveOP01.sav",
+          "name": "SaveOP01.sav",
+          "size": "217.9 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Starter Saves/PC/Commando/Save0001.sav",
+          "name": "Save0001.sav",
+          "size": "13.0 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Starter Saves/PS4 (US)/Commando/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "1.3 MB"
+        }
+      ],
+      "Siren": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/All Customization Saves/PC/Heads & Skins Dropper/Siren/SaveCS03.sav",
+          "name": "SaveCS03.sav",
+          "size": "135.8 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/All Customization Saves/PS4 (US)/Heads & Skins Dropper/Siren/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "8.9 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/All Customization Saves/Xbox 360/Heads & Skins Dropper/Siren/SaveCS03.sav",
+          "name": "SaveCS03.sav",
+          "size": "135.8 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Hybrid Weapons Saves/pc save/Siren/SaveHYB6.sav",
+          "name": "SaveHYB6.sav",
+          "size": "154.8 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Hybrid Weapons Saves/PS4 (US)/Siren/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "11.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Hybrid Weapons Saves/xbox 360 save/Siren/SaveHYB6.sav",
+          "name": "SaveHYB6.sav",
+          "size": "155.3 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Instant Level Saves/pc save/Siren/SaveXP03.sav",
+          "name": "SaveXP03.sav",
+          "size": "217.7 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Instant Level Saves/PS4 (US)/Siren/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "9.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Instant Level Saves/xbox 360 save/Siren/SaveXP03.sav",
+          "name": "SaveXP03.sav",
+          "size": "217.7 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/op 10 booster/pc save/Siren/SaveOP03.sav",
+          "name": "SaveOP03.sav",
+          "size": "217.7 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/op 10 booster/PS4 (US)/Siren/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "9.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/op 10 booster/xbox 360 save/Siren/SaveOP03.sav",
+          "name": "SaveOP03.sav",
+          "size": "217.7 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Starter Saves/PC/Siren/Save0003.sav",
+          "name": "Save0003.sav",
+          "size": "12.8 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Starter Saves/PS4 (US)/Siren/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "10.0 MB"
+        }
+      ],
+      "Psycho": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Hybrid Weapons Saves/pc save/Psycho/SaveHYB5.sav",
+          "name": "SaveHYB5.sav",
+          "size": "156.5 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Hybrid Weapons Saves/PS4 (US)/Psycho/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "11.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Hybrid Weapons Saves/xbox 360 save/Psycho/SaveHYB5.sav",
+          "name": "SaveHYB5.sav",
+          "size": "141.5 KB"
+        }
+      ],
+      "Mechromancer": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/All Customization Saves/PC/Heads & Skins Dropper/Mechromancer/SaveCS05.sav",
+          "name": "SaveCS05.sav",
+          "size": "136.9 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/All Customization Saves/PS4 (US)/Heads & Skins Dropper/Mechromancer/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "8.9 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/All Customization Saves/Xbox 360/Heads & Skins Dropper/Mechromancer/SaveCS05.sav",
+          "name": "SaveCS05.sav",
+          "size": "136.9 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Hybrid Weapons Saves/pc save/Mechromancer/SaveHYB4.sav",
+          "name": "SaveHYB4.sav",
+          "size": "137.5 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Hybrid Weapons Saves/PS4 (US)/Mechromancer/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "11.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Hybrid Weapons Saves/xbox 360 save/Mechromancer/SaveHYB4.sav",
+          "name": "SaveHYB4.sav",
+          "size": "156.7 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Instant Level Saves/pc save/Mechromancer/SaveXP05.sav",
+          "name": "SaveXP05.sav",
+          "size": "218.9 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Instant Level Saves/PS4 (US)/Mechromancer/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "9.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Instant Level Saves/xbox 360 save/Mechromancer/SaveXP05.sav",
+          "name": "SaveXP05.sav",
+          "size": "218.9 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/op 10 booster/pc save/Mechromancer/SaveOP05.sav",
+          "name": "SaveOP05.sav",
+          "size": "218.9 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/op 10 booster/PS4 (US)/Mechromancer/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "9.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/op 10 booster/xbox 360 save/Mechromancer/SaveOP05.sav",
+          "name": "SaveOP05.sav",
+          "size": "218.9 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Starter Saves/PC/Mechromancer/Save0005.sav",
+          "name": "Save0005.sav",
+          "size": "13.8 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Starter Saves/PS4 (US)/Mechromancer/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "1.3 MB"
+        }
+      ],
+      "Assassin": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/All Customization Saves/PC/Heads & Skins Dropper/Assassin/SaveCS02.sav",
+          "name": "SaveCS02.sav",
+          "size": "135.9 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/All Customization Saves/PS4 (US)/Heads & Skins Dropper/Assassin/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "8.9 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/All Customization Saves/Xbox 360/Heads & Skins Dropper/Assassin/SaveCS02.sav",
+          "name": "SaveCS02.sav",
+          "size": "135.9 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Hybrid Weapons Saves/pc save/Assassin/SaveHYB1.sav",
+          "name": "SaveHYB1.sav",
+          "size": "137.5 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Hybrid Weapons Saves/PS4 (US)/Assassin/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "11.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Hybrid Weapons Saves/xbox 360 save/Assassin/SaveHYB1.sav",
+          "name": "SaveHYB1.sav",
+          "size": "137.5 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Instant Level Saves/pc save/Assassin/SaveXP02.sav",
+          "name": "SaveXP02.sav",
+          "size": "217.8 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Instant Level Saves/PS4 (US)/Assassin/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "9.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Instant Level Saves/xbox 360 save/Assassin/SaveXP02.sav",
+          "name": "SaveXP02.sav",
+          "size": "217.9 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/op 10 booster/pc save/Assassin/SaveOP02.sav",
+          "name": "SaveOP02.sav",
+          "size": "217.8 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/op 10 booster/PS4 (US)/Assassin/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "9.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/op 10 booster/xbox 360 save/Assassin/SaveOP02.sav",
+          "name": "SaveOP02.sav",
+          "size": "217.8 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Starter Saves/PC/Assassin/Save0002.sav",
+          "name": "Save0002.sav",
+          "size": "12.9 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Starter Saves/PS4 (US)/Assassin/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "10.0 MB"
+        }
+      ],
+      "PS4 (US)": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/All Customization Saves/PS4 (US)/Save",
+          "name": "Save",
+          "size": "1 B"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Profile Saves/PS4 (US)/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "10.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Weapon Item Droppers Saves/PS4 (US)/i dont care",
+          "name": "i dont care",
+          "size": "1 B"
+        }
+      ],
+      "Psyhco": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/All Customization Saves/PC/Heads & Skins Dropper/Psyhco/SaveCS06.sav",
+          "name": "SaveCS06.sav",
+          "size": "136.5 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/All Customization Saves/PS4 (US)/Heads & Skins Dropper/Psyhco/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "8.9 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/All Customization Saves/Xbox 360/Heads & Skins Dropper/Psyhco/SaveCS06.sav",
+          "name": "SaveCS06.sav",
+          "size": "136.5 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Instant Level Saves/pc save/Psyhco/SaveXP06.sav",
+          "name": "SaveXP06.sav",
+          "size": "218.4 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Instant Level Saves/PS4 (US)/Psyhco/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "9.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Instant Level Saves/xbox 360 save/Psyhco/SaveXP06.sav",
+          "name": "SaveXP06.sav",
+          "size": "218.4 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/op 10 booster/pc save/Psyhco/SaveOP06.sav",
+          "name": "SaveOP06.sav",
+          "size": "218.4 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/op 10 booster/PS4 (US)/Psyhco/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "9.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/op 10 booster/xbox 360 save/Psyhco/SaveOP06.sav",
+          "name": "SaveOP06.sav",
+          "size": "218.4 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Starter Saves/PC/Psyhco/Save0006.sav",
+          "name": "Save0006.sav",
+          "size": "13.4 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Starter Saves/PS4 (US)/Psyhco/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "10.0 MB"
+        }
+      ],
+      "xbox 360 save": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Weapon Item Droppers Saves/xbox 360 save/i dont care",
+          "name": "i dont care",
+          "size": "1 B"
+        }
+      ],
+      "PS4 (EU)": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Hybrid Weapons Saves/PS4 (EU)/save here",
+          "name": "save here",
+          "size": "1 B"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Instant Level Saves/PS4 (EU)/i dont care",
+          "name": "i dont care",
+          "size": "1 B"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/op 10 booster/PS4 (EU)/i dont care",
+          "name": "i dont care",
+          "size": "1 B"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Weapon Item Droppers Saves/PS4 (EU)/i dont care",
+          "name": "i dont care",
+          "size": "1 B"
+        }
+      ],
+      "pc save": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/borderlands 2/Weapon Item Droppers Saves/pc save/i dont care",
+          "name": "i dont care",
+          "size": "1 B"
+        }
+      ]
+    }
+  },
+  "Prince of Persia The Lost Crown": {
+    "files": [
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Prince of Persia The Lost Crown/Prince of Persia The Lost Crown Modded Starter Save PS4 US.zip",
+        "name": "Prince of Persia The Lost Crown Modded Starter Save PS4 US.zip",
+        "size": "1.4 MB"
+      }
+    ],
+    "subcategories": {}
+  },
+  "Aliens Fireteam Elite": {
+    "files": [
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Aliens Fireteam Elite/Aliens Fireteam Elite Modded Starter Save PC.zip",
+        "name": "Aliens Fireteam Elite Modded Starter Save PC.zip",
+        "size": "24.3 KB"
+      },
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Aliens Fireteam Elite/Aliens Fireteam Elite Modded Starter Save PS4 EU.zip",
+        "name": "Aliens Fireteam Elite Modded Starter Save PS4 EU.zip",
+        "size": "10.1 MB"
+      },
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Aliens Fireteam Elite/Aliens Fireteam Elite Modded Starter Save PS4 US.zip",
+        "name": "Aliens Fireteam Elite Modded Starter Save PS4 US.zip",
+        "size": "10.1 MB"
+      }
+    ],
+    "subcategories": {
+      "PS4 (US)": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Aliens Fireteam Elite/Modded Starter Saves/PS4 (US)/CUSA27462.zip",
+          "name": "CUSA27462.zip",
+          "size": "10.1 MB"
+        }
+      ],
+      "pc save": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Aliens Fireteam Elite/Modded Starter Saves/pc save/char.sav",
+          "name": "char.sav",
+          "size": "279.5 KB"
+        }
+      ]
+    }
+  },
+  "Hogwarts Legacy": {
+    "files": [],
+    "subcategories": {
+      "Modded Starter Saves": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Hogwarts Legacy/Modded Starter Saves/Hogwarts Legacy Modded Starter Saves PS4 US.zip",
+          "name": "Hogwarts Legacy Modded Starter Saves PS4 US.zip",
+          "size": "24.0 MB"
+        }
+      ]
+    }
+  },
+  "Borderlands 3": {
+    "files": [],
+    "subcategories": {
+      "FL4K": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands 3/Starter Saves/PC/FL4K/2.sav",
+          "name": "2.sav",
+          "size": "306.1 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands 3/Starter Saves/PS4 (US)/FL4K/CUSA07823.zip",
+          "name": "CUSA07823.zip",
+          "size": "10.1 MB"
+        }
+      ],
+      "Amara": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands 3/Starter Saves/PC/Amara/1.sav",
+          "name": "1.sav",
+          "size": "305.0 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands 3/Starter Saves/PS4 (US)/Amara/CUSA07823.zip",
+          "name": "CUSA07823.zip",
+          "size": "10.1 MB"
+        }
+      ],
+      "Zane": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands 3/Starter Saves/PC/Zane/3.sav",
+          "name": "3.sav",
+          "size": "304.8 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands 3/Starter Saves/PS4 (US)/Zane/CUSA07823.zip",
+          "name": "CUSA07823.zip",
+          "size": "10.1 MB"
+        }
+      ],
+      "Moze": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands 3/Starter Saves/PC/Moze/4.sav",
+          "name": "4.sav",
+          "size": "304.4 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands 3/Starter Saves/PS4 (US)/Moze/CUSA07823.zip",
+          "name": "CUSA07823.zip",
+          "size": "10.1 MB"
+        }
+      ]
+    }
+  },
+  "Generation Zero": {
+    "files": [
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Generation Zero/Generation Zero Modded Starter Save PC.zip",
+        "name": "Generation Zero Modded Starter Save PC.zip",
+        "size": "254.1 KB"
+      },
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Generation Zero/Generation Zero Modded Starter Save PS4 EU.zip",
+        "name": "Generation Zero Modded Starter Save PS4 EU.zip",
+        "size": "15.9 MB"
+      },
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Generation Zero/Generation Zero Modded Starter Save PS4 US.zip",
+        "name": "Generation Zero Modded Starter Save PS4 US.zip",
+        "size": "1.5 MB"
+      }
+    ],
+    "subcategories": {}
+  },
+  "Red Dead Redemption 2": {
+    "files": [
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Red Dead Redemption 2/Red Dead Redemption 2 Modded Starter Save PS4 US.zip",
+        "name": "Red Dead Redemption 2 Modded Starter Save PS4 US.zip",
+        "size": "2.1 MB"
+      }
+    ],
+    "subcategories": {}
+  },
+  "Dead Rising 4": {
+    "files": [],
+    "subcategories": {
+      "PS4 (US)": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dead Rising 4/Modded Starter Save/PS4 (US)/CUSA08540.zip",
+          "name": "CUSA08540.zip",
+          "size": "3.7 MB"
+        }
+      ]
+    }
+  },
+  "Dead Island Riptide DE": {
+    "files": [],
+    "subcategories": {
+      "Logan": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dead Island Riptide DE/Modded Starter Saves/pc save/Logan/save_0.sar",
+          "name": "save_0.sar",
+          "size": "15.9 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dead Island Riptide DE/Modded Starter Saves/PS4 (US)/Logan/CUSA03685.zip",
+          "name": "CUSA03685.zip",
+          "size": "1.4 MB"
+        }
+      ],
+      "Sam B": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dead Island Riptide DE/Modded Starter Saves/pc save/Sam B/save_3.sar",
+          "name": "save_3.sar",
+          "size": "15.9 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dead Island Riptide DE/Modded Starter Saves/PS4 (US)/Sam B/CUSA03685.zip",
+          "name": "CUSA03685.zip",
+          "size": "1.4 MB"
+        }
+      ],
+      "John": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dead Island Riptide DE/Modded Starter Saves/pc save/John/save_4.sar",
+          "name": "save_4.sar",
+          "size": "15.9 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dead Island Riptide DE/Modded Starter Saves/PS4 (US)/John/CUSA03685.zip",
+          "name": "CUSA03685.zip",
+          "size": "1.4 MB"
+        }
+      ],
+      "Xian": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dead Island Riptide DE/Modded Starter Saves/pc save/Xian/save_2.sar",
+          "name": "save_2.sar",
+          "size": "15.9 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dead Island Riptide DE/Modded Starter Saves/PS4 (US)/Xian/CUSA03685.zip",
+          "name": "CUSA03685.zip",
+          "size": "1.4 MB"
+        }
+      ],
+      "Purna": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dead Island Riptide DE/Modded Starter Saves/pc save/Purna/save_1.sar",
+          "name": "save_1.sar",
+          "size": "15.9 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dead Island Riptide DE/Modded Starter Saves/PS4 (US)/Purna/CUSA03685.zip",
+          "name": "CUSA03685.zip",
+          "size": "1.4 MB"
+        }
+      ]
+    }
+  },
+  "Watch Dogs 1": {
+    "files": [
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Watch Dogs 1/Watch Dogs 1 Modded Starter Save PC.zip",
+        "name": "Watch Dogs 1 Modded Starter Save PC.zip",
+        "size": "11.0 KB"
+      },
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Watch Dogs 1/Watch Dogs 1 Modded Starter Save PS4 EU.zip",
+        "name": "Watch Dogs 1 Modded Starter Save PS4 EU.zip",
+        "size": "9.9 MB"
+      },
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Watch Dogs 1/Watch Dogs 1 Modded Starter Save PS4 US.zip",
+        "name": "Watch Dogs 1 Modded Starter Save PS4 US.zip",
+        "size": "9.9 MB"
+      }
+    ],
+    "subcategories": {}
+  },
+  "Dying Light 2": {
+    "files": [],
+    "subcategories": {
+      "Modded Starter Saves": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dying Light 2/Modded Starter Saves/Dying Light 2 Modded Starter Save PC.zip",
+          "name": "Dying Light 2 Modded Starter Save PC.zip",
+          "size": "155.1 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dying Light 2/Modded Starter Saves/Dying Light 2 Modded Starter Save PS4 EU.zip",
+          "name": "Dying Light 2 Modded Starter Save PS4 EU.zip",
+          "size": "1.4 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dying Light 2/Modded Starter Saves/Dying Light 2 Modded Starter Save PS4 US.zip",
+          "name": "Dying Light 2 Modded Starter Save PS4 US.zip",
+          "size": "1.5 MB"
+        }
+      ]
+    }
+  },
+  "Borderlands Pre-sequel": {
+    "files": [],
+    "subcategories": {
+      "Xbox 360": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/All Customization Saves/Xbox 360/Save",
+          "name": "Save",
+          "size": "1 B"
+        }
+      ],
+      "Baroness": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/All Customization Saves/PC/Heads & Skins Dropper/Baroness/SaveCS06.sav",
+          "name": "SaveCS06.sav",
+          "size": "87.3 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/All Customization Saves/PS4 (US)/Heads & Skins Dropper/Baroness/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "8.9 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/All Customization Saves/Xbox 360/Heads & Skins Dropper/Baroness/SaveCS06.sav",
+          "name": "SaveCS06.sav",
+          "size": "87.3 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Instant Level Saves/pc save/Baroness/SaveXP06.sav",
+          "name": "SaveXP06.sav",
+          "size": "168.6 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Instant Level Saves/PS4 (US)/Baroness/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "9.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Instant Level Saves/xbox 360 save/Baroness/SaveXP06.sav",
+          "name": "SaveXP06.sav",
+          "size": "168.6 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Starter Saves/PC/Baroness/Save0006.sav",
+          "name": "Save0006.sav",
+          "size": "13.8 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Starter Saves/PS4 (US)/Baroness/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "10.0 MB"
+        }
+      ],
+      "Lawbringer": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/All Customization Saves/PC/Heads & Skins Dropper/Lawbringer/SaveCS03.sav",
+          "name": "SaveCS03.sav",
+          "size": "87.2 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/All Customization Saves/PS4 (US)/Heads & Skins Dropper/Lawbringer/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "8.9 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/All Customization Saves/Xbox 360/Heads & Skins Dropper/Lawbringer/SaveCS03.sav",
+          "name": "SaveCS03.sav",
+          "size": "87.2 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Instant Level Saves/pc save/Lawbringer/SaveXP03.sav",
+          "name": "SaveXP03.sav",
+          "size": "168.5 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Instant Level Saves/PS4 (US)/Lawbringer/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "9.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Instant Level Saves/xbox 360 save/Lawbringer/SaveXP03.sav",
+          "name": "SaveXP03.sav",
+          "size": "168.5 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Starter Saves/PC/Lawbringer/Save0003.sav",
+          "name": "Save0003.sav",
+          "size": "13.6 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Starter Saves/PS4 (US)/Lawbringer/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "10.0 MB"
+        }
+      ],
+      "PC": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/All Customization Saves/PC/Save",
+          "name": "Save",
+          "size": "1 B"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Profile Saves/PC/profile.bin",
+          "name": "profile.bin",
+          "size": "676 B"
+        }
+      ],
+      "Enforcer": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/All Customization Saves/PC/Heads & Skins Dropper/Enforcer/SaveCS02.sav",
+          "name": "SaveCS02.sav",
+          "size": "87.2 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/All Customization Saves/PS4 (US)/Heads & Skins Dropper/Enforcer/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "8.9 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/All Customization Saves/Xbox 360/Heads & Skins Dropper/Enforcer/SaveCS02.sav",
+          "name": "SaveCS02.sav",
+          "size": "87.2 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Instant Level Saves/pc save/Enforcer/SaveXP02.sav",
+          "name": "SaveXP02.sav",
+          "size": "168.5 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Instant Level Saves/PS4 (US)/Enforcer/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "9.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Instant Level Saves/xbox 360 save/Enforcer/SaveXP02.sav",
+          "name": "SaveXP02.sav",
+          "size": "168.5 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Starter Saves/PC/Enforcer/Save0002.sav",
+          "name": "Save0002.sav",
+          "size": "13.7 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Starter Saves/PS4 (US)/Enforcer/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "10.0 MB"
+        }
+      ],
+      "Wilhelm": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Hybrid Weapons Saves/pc save/Wilhelm/SaveHYB2.sav",
+          "name": "SaveHYB2.sav",
+          "size": "107.9 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Hybrid Weapons Saves/PS4 (US)/Wilhelm/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "11.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Hybrid Weapons Saves/xbox 360 save/Wilhelm/SaveHYB2.sav",
+          "name": "SaveHYB2.sav",
+          "size": "245.3 KB"
+        }
+      ],
+      "Claptrap": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Hybrid Weapons Saves/pc save/Claptrap/SaveHYB4.sav",
+          "name": "SaveHYB4.sav",
+          "size": "103.4 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Hybrid Weapons Saves/PS4 (US)/Claptrap/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "11.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Hybrid Weapons Saves/xbox 360 save/Claptrap/SaveHYB4.sav",
+          "name": "SaveHYB4.sav",
+          "size": "245.4 KB"
+        }
+      ],
+      "Doppelganger": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/All Customization Saves/PC/Heads & Skins Dropper/Doppelganger/SaveCS05.sav",
+          "name": "SaveCS05.sav",
+          "size": "87.4 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/All Customization Saves/PS4 (US)/Heads & Skins Dropper/Doppelganger/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "8.9 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/All Customization Saves/Xbox 360/Heads & Skins Dropper/Doppelganger/SaveCS05.sav",
+          "name": "SaveCS05.sav",
+          "size": "87.4 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Instant Level Saves/pc save/Doppelganger/SaveXP05.sav",
+          "name": "SaveXP05.sav",
+          "size": "168.7 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Instant Level Saves/PS4 (US)/Doppelganger/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "9.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Instant Level Saves/xbox 360 save/Doppelganger/SaveXP05.sav",
+          "name": "SaveXP05.sav",
+          "size": "168.7 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Starter Saves/PC/Doppelganger/Save0005.sav",
+          "name": "Save0005.sav",
+          "size": "13.8 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Starter Saves/PS4 (US)/Doppelganger/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "10.0 MB"
+        }
+      ],
+      "Nisha": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Hybrid Weapons Saves/pc save/Nisha/SaveHYB3.sav",
+          "name": "SaveHYB3.sav",
+          "size": "110.8 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Hybrid Weapons Saves/PS4 (US)/Nisha/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "11.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Hybrid Weapons Saves/xbox 360 save/Nisha/SaveHYB3.sav",
+          "name": "SaveHYB3.sav",
+          "size": "245.4 KB"
+        }
+      ],
+      "PS4 (US)": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/All Customization Saves/PS4 (US)/Saves",
+          "name": "Saves",
+          "size": "1 B"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Profile Saves/PS4 (US)/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "10.0 MB"
+        }
+      ],
+      "Fragtrap": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/All Customization Saves/PC/Heads & Skins Dropper/Fragtrap/SaveCS04.sav",
+          "name": "SaveCS04.sav",
+          "size": "87.4 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/All Customization Saves/PS4 (US)/Heads & Skins Dropper/Fragtrap/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "8.9 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/All Customization Saves/Xbox 360/Heads & Skins Dropper/Fragtrap/SaveCS04.sav",
+          "name": "SaveCS04.sav",
+          "size": "87.4 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Instant Level Saves/pc save/Fragtrap/SaveXP04.sav",
+          "name": "SaveXP04.sav",
+          "size": "168.7 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Instant Level Saves/PS4 (US)/Fragtrap/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "9.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Instant Level Saves/xbox 360 save/Fragtrap/SaveXP04.sav",
+          "name": "SaveXP04.sav",
+          "size": "168.7 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Starter Saves/PC/Fragtrap/Save0004.sav",
+          "name": "Save0004.sav",
+          "size": "13.8 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Starter Saves/PS4 (US)/Fragtrap/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "10.0 MB"
+        }
+      ],
+      "Gladiator": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/All Customization Saves/PC/Heads & Skins Dropper/Gladiator/SaveCS01.sav",
+          "name": "SaveCS01.sav",
+          "size": "87.1 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/All Customization Saves/PS4 (US)/Heads & Skins Dropper/Gladiator/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "8.9 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/All Customization Saves/Xbox 360/Heads & Skins Dropper/Gladiator/SaveCS01.sav",
+          "name": "SaveCS01.sav",
+          "size": "87.1 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Instant Level Saves/pc save/Gladiator/SaveXP01.sav",
+          "name": "SaveXP01.sav",
+          "size": "168.4 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Instant Level Saves/PS4 (US)/Gladiator/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "9.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Instant Level Saves/xbox 360 save/Gladiator/SaveXP01.sav",
+          "name": "SaveXP01.sav",
+          "size": "168.4 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Starter Saves/PC/Gladiator/Save0001.sav",
+          "name": "Save0001.sav",
+          "size": "13.5 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Starter Saves/PS4 (US)/Gladiator/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "10.0 MB"
+        }
+      ],
+      "Aurelia": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Hybrid Weapons Saves/pc save/Aurelia/SaveHYB6.sav",
+          "name": "SaveHYB6.sav",
+          "size": "107.6 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Hybrid Weapons Saves/PS4 (US)/Aurelia/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "11.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Hybrid Weapons Saves/xbox 360 save/Aurelia/SaveHYB6.sav",
+          "name": "SaveHYB6.sav",
+          "size": "245.3 KB"
+        }
+      ],
+      "Jack": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Hybrid Weapons Saves/pc save/Jack/SaveHYB5.sav",
+          "name": "SaveHYB5.sav",
+          "size": "107.0 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Hybrid Weapons Saves/PS4 (US)/Jack/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "11.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Hybrid Weapons Saves/xbox 360 save/Jack/SaveHYB5.sav",
+          "name": "SaveHYB5.sav",
+          "size": "245.7 KB"
+        }
+      ],
+      "PS4 (EU)": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/All Customization Saves/PS4 (EU)/save here",
+          "name": "save here",
+          "size": "1 B"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Hybrid Weapons Saves/PS4 (EU)/save here",
+          "name": "save here",
+          "size": "1 B"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Instant Level Saves/PS4 (EU)/i dont care",
+          "name": "i dont care",
+          "size": "1 B"
+        }
+      ],
+      "Athena": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Hybrid Weapons Saves/pc save/Athena/SaveHYB1.sav",
+          "name": "SaveHYB1.sav",
+          "size": "113.7 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Hybrid Weapons Saves/PS4 (US)/Athena/CUSA01401.zip",
+          "name": "CUSA01401.zip",
+          "size": "11.0 MB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Borderlands Pre-sequel/Hybrid Weapons Saves/xbox 360 save/Athena/SaveHYB1.sav",
+          "name": "SaveHYB1.sav",
+          "size": "245.1 KB"
+        }
+      ]
+    }
+  },
+  "Sword Art Online Last Recollection": {
+    "files": [
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Sword Art Online Last Recollection/Sword Art Online Last Recollection Modded Starter Save PC.zip",
+        "name": "Sword Art Online Last Recollection Modded Starter Save PC.zip",
+        "size": "26.6 KB"
+      },
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Sword Art Online Last Recollection/Sword Art Online Last Recollection Modded Starter Save PS4.zip",
+        "name": "Sword Art Online Last Recollection Modded Starter Save PS4.zip",
+        "size": "3.6 MB"
+      }
+    ],
+    "subcategories": {}
+  },
+  "High on Life": {
+    "files": [
+      {
+        "path": "arsashots-saves-main/arsashot-saves/High on Life/High on Life Modded Starter Save PC.zip",
+        "name": "High on Life Modded Starter Save PC.zip",
+        "size": "36.3 KB"
+      },
+      {
+        "path": "arsashots-saves-main/arsashot-saves/High on Life/High on Life Modded Starter Save PS4 EU.zip",
+        "name": "High on Life Modded Starter Save PS4 EU.zip",
+        "size": "5.1 MB"
+      },
+      {
+        "path": "arsashots-saves-main/arsashot-saves/High on Life/High on Life Modded Starter Save PS4 US.zip",
+        "name": "High on Life Modded Starter Save PS4 US.zip",
+        "size": "5.1 MB"
+      }
+    ],
+    "subcategories": {}
+  },
+  "Like a Dragon Gaiden The Man Who Erased His Name": {
+    "files": [],
+    "subcategories": {}
+  },
+  "Borderlands 1": {
+    "files": [
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Borderlands 1/Borderlands 1 Modded Starter Saves PC.zip",
+        "name": "Borderlands 1 Modded Starter Saves PC.zip",
+        "size": "67.2 KB"
+      },
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Borderlands 1/Borderlands 1 Modded Starter Saves PS4 EU.zip",
+        "name": "Borderlands 1 Modded Starter Saves PS4 EU.zip",
+        "size": "7.5 MB"
+      },
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Borderlands 1/Borderlands 1 Modded Starter Saves PS4 US.zip",
+        "name": "Borderlands 1 Modded Starter Saves PS4 US.zip",
+        "size": "7.5 MB"
+      }
+    ],
+    "subcategories": {}
+  },
+  "No Man's Sky": {
+    "files": [
+      {
+        "path": "arsashots-saves-main/arsashot-saves/No Man's Sky/No Mans Sky Modded Starter Save PS4 US.zip",
+        "name": "No Mans Sky Modded Starter Save PS4 US.zip",
+        "size": "17.5 MB"
+      }
+    ],
+    "subcategories": {}
+  },
+  "Doom 2016": {
+    "files": [
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Doom 2016/Doom 2016 Modded Starter Save PS4 US.zip",
+        "name": "Doom 2016 Modded Starter Save PS4 US.zip",
+        "size": "19.9 MB"
+      }
+    ],
+    "subcategories": {}
+  },
+  "Assassin's Creed Valhalla": {
+    "files": [
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Assassin's Creed Valhalla/Assassin's Creed Valhalla Modded Starter Save PS4 US.zip",
+        "name": "Assassin's Creed Valhalla Modded Starter Save PS4 US.zip",
+        "size": "1.4 MB"
+      }
+    ],
+    "subcategories": {}
+  },
+  "Dead Island DE": {
+    "files": [],
+    "subcategories": {
+      "Logan": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dead Island DE/Modded Starter Saves/pc save/Logan/save_0.sav",
+          "name": "save_0.sav",
+          "size": "14.9 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dead Island DE/Modded Starter Saves/PS4 (US)/Logan/CUSA03684.zip",
+          "name": "CUSA03684.zip",
+          "size": "1.4 MB"
+        }
+      ],
+      "Sam B": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dead Island DE/Modded Starter Saves/pc save/Sam B/save_3.sav",
+          "name": "save_3.sav",
+          "size": "14.9 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dead Island DE/Modded Starter Saves/PS4 (US)/Sam B/CUSA03684.zip",
+          "name": "CUSA03684.zip",
+          "size": "1.4 MB"
+        }
+      ],
+      "Ryder": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dead Island DE/Modded Starter Saves/pc save/Ryder/save_4.sav",
+          "name": "save_4.sav",
+          "size": "14.8 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dead Island DE/Modded Starter Saves/PS4 (US)/Ryder/CUSA03684.zip",
+          "name": "CUSA03684.zip",
+          "size": "1.4 MB"
+        }
+      ],
+      "Xian": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dead Island DE/Modded Starter Saves/pc save/Xian/save_2.sav",
+          "name": "save_2.sav",
+          "size": "14.9 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dead Island DE/Modded Starter Saves/PS4 (US)/Xian/CUSA03684.zip",
+          "name": "CUSA03684.zip",
+          "size": "1.4 MB"
+        }
+      ],
+      "Purna": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dead Island DE/Modded Starter Saves/pc save/Purna/save_1.sav",
+          "name": "save_1.sav",
+          "size": "14.9 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dead Island DE/Modded Starter Saves/PS4 (US)/Purna/CUSA03684.zip",
+          "name": "CUSA03684.zip",
+          "size": "1.4 MB"
+        }
+      ]
+    }
+  },
+  "The Witcher 3": {
+    "files": [
+      {
+        "path": "arsashots-saves-main/arsashot-saves/The Witcher 3/The Witcher 3 Modded Starter Save PC.zip",
+        "name": "The Witcher 3 Modded Starter Save PC.zip",
+        "size": "247.6 KB"
+      },
+      {
+        "path": "arsashots-saves-main/arsashot-saves/The Witcher 3/The Witcher 3 Modded Starter Save PS4 US.zip",
+        "name": "The Witcher 3 Modded Starter Save PS4 US.zip",
+        "size": "15.9 MB"
+      }
+    ],
+    "subcategories": {}
+  },
+  "Dead Island 2": {
+    "files": [
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Dead Island 2/Dead Island 2 Modded Starter Save PC.zip",
+        "name": "Dead Island 2 Modded Starter Save PC.zip",
+        "size": "505.7 KB"
+      },
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Dead Island 2/Dead Island 2 Modded Starter Save PS4 EU.zip",
+        "name": "Dead Island 2 Modded Starter Save PS4 EU.zip",
+        "size": "8.1 MB"
+      },
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Dead Island 2/Dead Island 2 Modded Starter Save PS4 US.zip",
+        "name": "Dead Island 2 Modded Starter Save PS4 US.zip",
+        "size": "8.1 MB"
+      }
+    ],
+    "subcategories": {}
+  },
+  "Assassin’s Creed Origins": {
+    "files": [
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Assassin’s Creed Origins/Assassins Creed Origins Modded Starter Save PS4.zip",
+        "name": "Assassins Creed Origins Modded Starter Save PS4.zip",
+        "size": "9.9 MB"
+      }
+    ],
+    "subcategories": {}
+  },
+  "Dragon Age Inquisition": {
+    "files": [],
+    "subcategories": {
+      "Male": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dragon Age Inquisition/Modded Starter Saves/pc save/Male/DAISAVEU001C8BE6FBF.DAS",
+          "name": "DAISAVEU001C8BE6FBF.DAS",
+          "size": "226.8 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dragon Age Inquisition/Modded Starter Saves/PS4 (US)/Male/CUSA00220.zip",
+          "name": "CUSA00220.zip",
+          "size": "1.6 MB"
+        }
+      ],
+      "Female": [
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dragon Age Inquisition/Modded Starter Saves/pc save/Female/DAISAVEU00165F49FAC.DAS",
+          "name": "DAISAVEU00165F49FAC.DAS",
+          "size": "227.4 KB"
+        },
+        {
+          "path": "arsashots-saves-main/arsashot-saves/Dragon Age Inquisition/Modded Starter Saves/PS4 (US)/Female/CUSA00220.zip",
+          "name": "CUSA00220.zip",
+          "size": "1.6 MB"
+        }
+      ]
+    }
+  },
+  "Sekiro Shadows Die Twice": {
+    "files": [
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Sekiro Shadows Die Twice/Sekiro Shadows Die Twice Modded Starter Save PS4 US.zip",
+        "name": "Sekiro Shadows Die Twice Modded Starter Save PS4 US.zip",
+        "size": "24.7 MB"
+      }
+    ],
+    "subcategories": {}
+  },
+  "Skyrim": {
+    "files": [
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Skyrim/Skyrim Modded Starter Saves PS4 EU.zip",
+        "name": "Skyrim Modded Starter Saves PS4 EU.zip",
+        "size": "14.9 MB"
+      },
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Skyrim/Skyrim Modded Starter Saves PS4 US.zip",
+        "name": "Skyrim Modded Starter Saves PS4 US.zip",
+        "size": "14.9 MB"
+      }
+    ],
+    "subcategories": {}
+  },
+  "Granblue Fantasy Relink": {
+    "files": [
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Granblue Fantasy Relink/Granblue Fantasy Relink Modded Starter Save PS4 US.zip",
+        "name": "Granblue Fantasy Relink Modded Starter Save PS4 US.zip",
+        "size": "8.8 MB"
+      }
+    ],
+    "subcategories": {}
+  },
+  "Star Wars Jedi Survivor": {
+    "files": [
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Star Wars Jedi Survivor/Star Wars Jedi Survivor Modded Starter Save PC.zip",
+        "name": "Star Wars Jedi Survivor Modded Starter Save PC.zip",
+        "size": "221.6 KB"
+      },
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Star Wars Jedi Survivor/Star Wars Jedi Survivor Modded Starter Save PS4.zip",
+        "name": "Star Wars Jedi Survivor Modded Starter Save PS4.zip",
+        "size": "3.4 MB"
+      }
+    ],
+    "subcategories": {}
+  },
+  "Assassin's Creed Odyssey": {
+    "files": [
+      {
+        "path": "arsashots-saves-main/arsashot-saves/Assassin's Creed Odyssey/Assassin's Creed Odyssey Modded Starter Saves PS4.zip",
+        "name": "Assassin's Creed Odyssey Modded Starter Saves PS4.zip",
+        "size": "5.9 MB"
+      }
+    ],
+    "subcategories": {}
+  }
+};
+        
+        function createGameCard(gameName, gameData) {
+            const card = document.createElement('div');
+            card.className = 'game-card';
+            card.dataset.gameName = gameName.toLowerCase();
+            
+            const header = document.createElement('div');
+            header.className = 'game-header';
+            
+            const title = document.createElement('h2');
+            title.textContent = gameName;
+            header.appendChild(title);
+            
+            const fileCount = Object.keys(gameData.subcategories).reduce((sum, k) => sum + gameData.subcategories[k].length, 0) + gameData.files.length;
+            const subText = document.createElement('div');
+            subText.style.fontSize = '0.85em';
+            subText.style.opacity = '0.9';
+            subText.style.marginRight = '20px';
+            subText.textContent = fileCount + ' file' + (fileCount !== 1 ? 's' : '');
+            header.appendChild(subText);
+            
+            const toggleIcon = document.createElement('span');
+            toggleIcon.className = 'toggle-icon';
+            toggleIcon.textContent = '▼';
+            header.appendChild(toggleIcon);
+            
+            const content = document.createElement('div');
+            content.className = 'game-content';
+            
+            const filesDiv = document.createElement('div');
+            filesDiv.className = 'game-files';
+            
+            // Add subcategories
+            for (const [subcat, files] of Object.entries(gameData.subcategories)) {
+                // Skip empty subcategories
+                if (!files || files.length === 0) {
+                    continue;
+                }
+                
+                const subcatDiv = document.createElement('div');
+                subcatDiv.className = 'subcategory';
+                
+                const subcatTitle = document.createElement('div');
+                subcatTitle.className = 'subcategory-title';
+                
+                // Determine level based on number of ' > ' in the path
+                const parts = subcat.split(' > ');
+                const level = Math.min(parts.length, 3);
+                subcatTitle.classList.add(`category-level-${level}`);
+                
+                // Display only the deepest level name for readability, with hierarchy prefix
+                if (parts.length === 1) {
+                    subcatTitle.textContent = parts[0];
+                } else if (parts.length === 2) {
+                    subcatTitle.textContent = `${parts[0]} > ${parts[1]}`;
+                } else {
+                    // For 3+ levels, show parent > immediate parent > current
+                    subcatTitle.textContent = parts.slice(-2).join(' > ');
+                    subcatTitle.title = subcat; // Show full path on hover
+                }
+                
+                subcatDiv.appendChild(subcatTitle);
+                
+                files.forEach(file => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    
+                    const fileName = document.createElement('div');
+                    fileName.className = 'file-name';
+                    fileName.textContent = file.name;
+                    
+                    const fileInfo = document.createElement('div');
+                    fileInfo.className = 'file-info';
+                    
+                    const fileSize = document.createElement('div');
+                    fileSize.className = 'file-size';
+                    fileSize.textContent = file.size;
+                    
+                    const downloadBtn = document.createElement('a');
+                    downloadBtn.className = 'download-btn';
+                    downloadBtn.href = file.path;
+                    downloadBtn.download = file.name;
+                    downloadBtn.textContent = 'Download';
+                    downloadBtn.target = '_blank';
+                    downloadBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                    });
+                    
+                    fileInfo.appendChild(fileSize);
+                    fileInfo.appendChild(downloadBtn);
+                    
+                    fileItem.appendChild(fileName);
+                    fileItem.appendChild(fileInfo);
+                    
+                    subcatDiv.appendChild(fileItem);
+                });
+                
+                filesDiv.appendChild(subcatDiv);
+            }
+            
+            // Add root level files
+            if (gameData.files.length > 0) {
+                gameData.files.forEach(file => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    
+                    const fileName = document.createElement('div');
+                    fileName.className = 'file-name';
+                    fileName.textContent = file.name;
+                    
+                    const fileInfo = document.createElement('div');
+                    fileInfo.className = 'file-info';
+                    
+                    const fileSize = document.createElement('div');
+                    fileSize.className = 'file-size';
+                    fileSize.textContent = file.size;
+                    
+                    const downloadBtn = document.createElement('a');
+                    downloadBtn.className = 'download-btn';
+                    downloadBtn.href = file.path;
+                    downloadBtn.download = file.name;
+                    downloadBtn.textContent = 'Download';
+                    downloadBtn.target = '_blank';
+                    downloadBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                    });
+                    
+                    fileInfo.appendChild(fileSize);
+                    fileInfo.appendChild(downloadBtn);
+                    
+                    fileItem.appendChild(fileName);
+                    fileItem.appendChild(fileInfo);
+                    
+                    filesDiv.appendChild(fileItem);
+                });
+            }
+            
+            content.appendChild(filesDiv);
+            card.appendChild(header);
+            card.appendChild(content);
+            
+            header.addEventListener('click', (e) => {
+                e.stopPropagation();
+                card.classList.toggle('expanded');
+            });
+            
+            // Prevent content clicks from bubbling to header
+            content.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+            
+            // Prevent card-level clicks from triggering expansion
+            card.addEventListener('click', (e) => {
+                if (e.target === card) {
+                    e.stopPropagation();
+                }
+            });
+            
+            return card;
+        }
+        
+        function renderGames(searchTerm = '') {
+            const grid = document.getElementById('gamesGrid');
+            const noResults = document.getElementById('noResults');
+            grid.innerHTML = '';
+            
+            let visibleCount = 0;
+            
+            for (const [gameName, gameData] of Object.entries(gamesData)) {
+                if (searchTerm && !gameName.toLowerCase().includes(searchTerm.toLowerCase())) {
+                    continue;
+                }
+                visibleCount++;
+                const card = createGameCard(gameName, gameData);
+                grid.appendChild(card);
+            }
+            
+            noResults.classList.toggle('hidden', visibleCount > 0);
+        }
+        
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            renderGames(e.target.value);
+        });
+        
+        // Initial render
+        renderGames();
+    </script>
+</body>
+</html>
