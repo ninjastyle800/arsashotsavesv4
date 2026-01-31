@@ -177,7 +177,8 @@ $html = @"
         .game-content {
             display: none;
             padding: 0;
-            background: white;
+            background: #111;
+            color: #fff;
             border-radius: 0 0 12px 12px;
         }
         .game-card.expanded .game-content {
@@ -186,6 +187,8 @@ $html = @"
             overflow-y: auto;
             flex: 1;
             padding: 20px;
+            background: #111;
+            color: #fff;
         }
         
         .game-files {
