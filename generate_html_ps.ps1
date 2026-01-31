@@ -233,7 +233,7 @@ $html = @"
         
         .file-name {
             flex: 1;
-            color: #333;
+            color: #fff;
             font-size: 0.9em;
             word-break: break-all;
         }
