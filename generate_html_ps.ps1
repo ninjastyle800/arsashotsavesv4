@@ -1,6 +1,6 @@
 # Complete HTML generator in PowerShell
 
-$savesDir = "c:\Users\Chris\Downloads\arsashots-saves-main\arsashots-saves-main\test"
+$savesDir = "c:\Users\Chris\Downloads\arsashots-saves-main\arsashots-saves-main\arsashotsavesv4"
 $outputDir = "$savesDir\docs"
 $outputFile = "$outputDir\index.html"
 
@@ -32,7 +32,7 @@ function Build-FolderTree {
         # URL encode spaces and other special characters
         $encodedPath = [System.Uri]::EscapeUriString($relPath)
         # Use GitHub raw URL format with updated repository name
-        $githubUrl = "https://raw.githubusercontent.com/ninjastyle800/arsashotsavesv3/main/" + $encodedPath
+        $githubUrl = "https://raw.githubusercontent.com/ninjastyle800/arsashotsavesv4/main/" + $encodedPath
         $folderData['files'] += @{
             'name' = $file.Name
             'path' = $githubUrl
