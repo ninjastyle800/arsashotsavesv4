@@ -219,30 +219,7 @@ $html = @"
             padding: 0;
         }
         
-        .game-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            padding: 20px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            user-select: none;
-            position: relative;
-            flex-shrink: 0;
-            gap: 10px;
-            min-height: 60px;
-            width: 100%;
-            box-sizing: border-box;
-            font-weight: 600;
-            font-size: 1.1em;
-            letter-spacing: 0.01em;
-            border: 1.5px solid #5a5a8a;
-            box-shadow: 0 2px 10px rgba(102,126,234,0.08);
-            border-radius: 12px 12px 0 0;
-        }
-            margin: 8px 0;
-        }
+        /* Removed duplicate .game-header and stray margin */
         
         .file-item {
             display: flex;
