@@ -215,6 +215,8 @@ $html = @"
             color: #fff;
         }
 
+        }
+
         .nested-folder-header,
         .game-header {
             cursor: pointer;
