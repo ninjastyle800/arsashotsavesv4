@@ -323,8 +323,10 @@ $html = @"
     
     <footer style="text-align:center; color:white; margin-top:40px; opacity:0.95;">
         <p>Powered by GitHub Pages</p>
-        <a href="https://discord.gg/CwUG4qnPZF" target="_blank" style="display:inline-block; margin-top:18px; background:#5865F2; color:white; padding:10px 24px; border-radius:6px; font-weight:bold; text-decoration:none; font-size:1.1em;">
-            <span style="font-size:1.3em; vertical-align:middle;">💬</span> Join our Discord server
+        <div style="margin-top:18px; margin-bottom:8px; color:#fff; font-size:1.08em;">Need help or have questions? Our community and support team are available on Discord:</div>
+        <a href="https://discord.gg/CwUG4qnPZF" target="_blank" style="display:inline-flex; align-items:center; gap:10px; background:#5865F2; color:white; padding:14px 32px; border-radius:8px; font-weight:bold; text-decoration:none; font-size:1.18em; box-shadow:0 2px 12px rgba(88,101,242,0.18); transition:background 0.2s;">
+            <svg style="height:1.7em; width:1.7em; vertical-align:middle;" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.369a19.791 19.791 0 0 0-4.885-1.515.07.07 0 0 0-.073.035c-.211.375-.444.864-.608 1.249a18.524 18.524 0 0 0-5.487 0 12.51 12.51 0 0 0-.617-1.249.07.07 0 0 0-.073-.035A19.736 19.736 0 0 0 3.677 4.369a.064.064 0 0 0-.03.027C.533 8.159-.32 11.81.099 15.404a.08.08 0 0 0 .028.056c2.052 1.507 4.042 2.422 5.992 3.029a.077.077 0 0 0 .084-.027c.461-.63.873-1.295 1.226-1.994a.076.076 0 0 0-.041-.104c-.652-.247-1.27-.549-1.872-.892a.077.077 0 0 1-.008-.127c.126-.094.252-.192.371-.291a.074.074 0 0 1 .077-.01c3.927 1.793 8.18 1.793 12.061 0a.073.073 0 0 1 .078.009c.12.099.245.198.372.292a.077.077 0 0 1-.006.127 12.298 12.298 0 0 1-1.873.891.076.076 0 0 0-.04.105c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028c1.961-.607 3.951-1.522 6.003-3.029a.077.077 0 0 0 .028-.055c.5-4.09-.838-7.713-3.548-10.998a.061.061 0 0 0-.03-.028zM8.02 15.331c-1.183 0-2.156-1.085-2.156-2.419 0-1.333.955-2.418 2.156-2.418 1.21 0 2.174 1.094 2.156 2.418 0 1.334-.955 2.419-2.156 2.419zm7.974 0c-1.183 0-2.156-1.085-2.156-2.419 0-1.333.955-2.418 2.156-2.418 1.21 0 2.174 1.094 2.156 2.418 0 1.334-.946 2.419-2.156 2.419z"/></svg>
+            Get Help on Discord
         </a>
     </footer>
     
