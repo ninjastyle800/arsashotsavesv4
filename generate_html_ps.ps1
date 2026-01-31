@@ -252,6 +252,7 @@ $html = @"
             min-width: 220px;
             width: 100%;
             box-sizing: border-box;
+            user-select: none;
         }
         
         .file-item:last-child {
@@ -263,6 +264,8 @@ $html = @"
             color: #fff;
             font-size: 0.9em;
             word-break: break-all;
+            user-select: none;
+            cursor: pointer;
         }
         
         .file-info {
@@ -277,6 +280,8 @@ $html = @"
             font-size: 0.8em;
             min-width: 50px;
             text-align: right;
+            user-select: none;
+            cursor: pointer;
         }
         
         .download-btn {
