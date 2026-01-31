@@ -89,7 +89,7 @@ $html = @"
         
         header {
             text-align: center;
-            color: white;
+            color: #bbb;
             margin-bottom: 40px;
             animation: slideDown 0.5s ease-out;
         }
@@ -146,7 +146,7 @@ $html = @"
         
         .game-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            color: #bbb;
             padding: 20px;
             cursor: pointer;
             display: flex;
@@ -254,7 +254,7 @@ $html = @"
         
         .download-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            color: #bbb;
             border: none;
             padding: 6px 14px;
             border-radius: 6px;
@@ -276,7 +276,7 @@ $html = @"
         .no-results {
             text-align: center;
             padding: 40px;
-            color: white;
+            color: #bbb;
         }
         
         @keyframes slideDown {
