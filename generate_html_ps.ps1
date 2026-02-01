@@ -477,20 +477,21 @@ $html = @"
                                 fileSize.className = 'file-size';
                                 fileSize.textContent = file.size;
                                 
-                                const downloadBtn = document.createElement('a');
-                                downloadBtn.className = 'download-btn';
-                                downloadBtn.href = file.path;
-                                downloadBtn.download = file.name;
-                                downloadBtn.textContent = 'Download';
-                                downloadBtn.target = '_blank';
-                                downloadBtn.addEventListener('click', (e) => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    window.open(downloadBtn.href, '_blank');
-                                });
-                                
                                 fileInfo.appendChild(fileSize);
-                                fileInfo.appendChild(downloadBtn);
+                                if (file.canDownload !== false) {
+                                    const downloadBtn = document.createElement('a');
+                                    downloadBtn.className = 'download-btn';
+                                    downloadBtn.href = file.path;
+                                    downloadBtn.download = file.name;
+                                    downloadBtn.textContent = 'Download';
+                                    downloadBtn.target = '_blank';
+                                    downloadBtn.addEventListener('click', (e) => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        window.open(downloadBtn.href, '_blank');
+                                    });
+                                    fileInfo.appendChild(downloadBtn);
+                                }
                                 
                                 fileItem.appendChild(fileName);
                                 fileItem.appendChild(fileInfo);
