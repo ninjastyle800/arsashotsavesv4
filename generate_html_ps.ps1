@@ -32,10 +32,14 @@ function Build-FolderTree {
         $encodedPath = [System.Uri]::EscapeUriString($relPath)
         # Use GitHub raw URL format with updated repository name
         $githubUrl = "https://raw.githubusercontent.com/ninjastyle800/arsashotsavesv4/main/" + $encodedPath
+        $allowedExtensions = @('.sav', '.bin', '.zip', '.dat', '.profile', '.save', '.bak')
+        $ext = [System.IO.Path]::GetExtension($file.Name).ToLower()
+        $canDownload = $allowedExtensions -contains $ext
         $folderData['files'] += @{
             'name' = $file.Name
             'path' = $githubUrl
             'size' = Get-FileSizeStr $file.Length
+            'canDownload' = $canDownload
         }
     }
     
@@ -405,20 +409,21 @@ $html = @"
                     fileSize.className = 'file-size';
                     fileSize.textContent = file.size;
                     
-                    const downloadBtn = document.createElement('a');
-                    downloadBtn.className = 'download-btn';
-                    downloadBtn.href = file.path;
-                    downloadBtn.download = file.name;
-                    downloadBtn.textContent = 'Download';
-                    downloadBtn.target = '_blank';
-                    downloadBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        window.open(downloadBtn.href, '_blank');
-                    });
-                    
                     fileInfo.appendChild(fileSize);
-                    fileInfo.appendChild(downloadBtn);
+                    if (file.canDownload !== false) {
+                        const downloadBtn = document.createElement('a');
+                        downloadBtn.className = 'download-btn';
+                        downloadBtn.href = file.path;
+                        downloadBtn.download = file.name;
+                        downloadBtn.textContent = 'Download';
+                        downloadBtn.target = '_blank';
+                        downloadBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            window.open(downloadBtn.href, '_blank');
+                        });
+                        fileInfo.appendChild(downloadBtn);
+                    }
                     
                     fileItem.appendChild(fileName);
                     fileItem.appendChild(fileInfo);

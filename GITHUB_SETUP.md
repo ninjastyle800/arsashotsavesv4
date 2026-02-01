@@ -8,15 +8,6 @@ Use this PowerShell script whenever you want to refresh or rebuild your site fil
 - Split saves into smaller archives
 - Host on a different platform like Netlify or AWS S3
 
-## Regenerating the Website
-
-If you add new saves, just run the script again:
-```powershell
-.\generate_site.ps1
-```
-
-Then commit and push to GitHub.
-
 ## Features
 
 ✨ Beautiful responsive design

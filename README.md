@@ -1,7 +1,7 @@
 # 🎮 Arsashots Saves
 
 
-Welcome to the hub for modded and starter save files for your favorite games—curated by Arsashot (who also goes by Arsamodz).
+Discover a curated collection of modded and starter save files for your favorite games, brought to you by Arsashot (also known as Arsamodz).
 
 **No new saves at this time.**
 
@@ -29,5 +29,3 @@ Join our Discord: [discord.gg/CwUG4qnPZF](https://discord.gg/CwUG4qnPZF)
 ---
 
 **Happy gaming!**
-
-*Curated by Arsashot (aka Arsamodz)*
