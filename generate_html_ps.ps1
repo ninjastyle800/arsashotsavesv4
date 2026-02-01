@@ -340,7 +340,7 @@ $html = @"
             <h1>🎮 Arsashot Saves Download Center</h1>
             <p>Browse and download the game saves you need</p>
             <div style="background: #ffefc1; color: #a67c00; border-radius: 8px; padding: 12px 18px; margin: 18px auto 0 auto; max-width: 600px; font-size: 1.08em; box-shadow: 0 2px 8px rgba(0,0,0,0.07);">
-                <strong>Note for iPhone/iOS users:</strong> Due to iOS restrictions, you may not be able to download certain file types (like .sav, .bin, .zip, etc.) directly on your device. Please use a computer (Windows, Mac, or Linux) to download these files.
+                 <strong>Note for iPhone/iOS users:</strong> If you have trouble downloading files in Discord, go to Discord settings and set the browser to Chrome instead of the built-in app. This should resolve most download issues for .sav, .bin, .zip, and other file types.
             </div>
         </header>
         
