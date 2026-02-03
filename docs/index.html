@@ -3486,7 +3486,12 @@
                 document.querySelectorAll('.game-card.expanded').forEach(c => {
                     if (c !== card) c.classList.remove('expanded');
                 });
+                const willExpand = !card.classList.contains('expanded');
                 card.classList.toggle('expanded');
+                if (willExpand) {
+                    // Scroll the header into view smoothly, align to top
+                    header.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             });
             
             content.addEventListener('click', (e) => {
