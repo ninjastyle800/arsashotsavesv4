@@ -32,7 +32,7 @@ function Build-FolderTree {
         $encodedPath = [System.Uri]::EscapeUriString($relPath)
         # Use GitHub raw URL format with updated repository name
         $githubUrl = "https://raw.githubusercontent.com/ninjastyle800/arsashotsavesv4/main/" + $encodedPath
-        $allowedExtensions = @('.sav', '.bin', '.zip', '.dat', '.profile', '.save', '.bak', '.dax')
+        $allowedExtensions = @('.sav', '.bin', '.zip', '.dat', '.profile', '.save', '.bak','.das')
         $ext = [System.IO.Path]::GetExtension($file.Name).ToLower()
         $canDownload = $allowedExtensions -contains $ext
         $folderData['files'] += @{
